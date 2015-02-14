@@ -9,6 +9,8 @@
       <div class="high">High score: <span>0</span></div>
       <div class="current">Current score: <span>0</span></div>
       <div class="collisions">Collisions: <span>0</span></div>
+        Enemy Count:
+        <input type="range" name="badguys" min="1" max="50" onchange="updateSlider(this.value)">
     </div>
     <script src="d3.js" charset="utf-8"></script>
     <script src='underscore.js'></script>

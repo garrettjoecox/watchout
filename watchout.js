@@ -9,17 +9,19 @@
   // if collision add to counter, update high score if applicable
 
 // MVP - get asteroids to move around the screen.
-var boardHeight = 500;
-var boardWidth = 500;
+var boardHeight = window.innerHeight - 100;
+var boardWidth = window.innerWidth - 50;
 var score = 0;
 var highScore = 0;
 var collisionCtr = 0;
-var enemies = _.range(0, 30).map(function(i){
+var badguys = 30;
+var enemies = _.range(0, badguys).map(function(i){
     return {
         id : i,
         x : Math.random()*boardWidth,
         y : Math.random()*boardHeight,
-        tt: Math.random()*1000
+        tt: Math.random()*1000,
+        r: 0
     }
 });
 var player = _.range(0, 1).map(function(i){
@@ -56,6 +58,8 @@ d3.select("svg").selectAll(".player")
     .call(drag);
 
 
+
+var move = function (){
 d3.select("svg").selectAll(".enemy")
     .data(enemies)
     .enter()
@@ -72,24 +76,43 @@ d3.select("svg").selectAll(".enemy")
         return d.y;
     })
 
-var move = function (){
+    var oldx, oldy
 
     for(i = 0; i < enemies.length;i++){
+        oldx = enemies[i]['x']+10;
+        oldy = enemies[i]['y']+10;
         enemies[i]['x'] = Math.random()*boardWidth;
         enemies[i]['y'] = Math.random()*boardHeight;
         enemies[i]['tt'] = Math.random()*1000;
+
+        d3.select("svg")
+        .append("line")
+        .attr("style", "stroke:rgb(255,0,0);stroke-width:2")
+        .attr("x1", oldx).attr("y1", oldy)
+        .style("opacity",0)
+        .transition()
+        .style("opacity",1)
+        .attr("x2", enemies[i]['x']+10).attr("y2", enemies[i]['y']+10)
+        .remove()
+
     }
 
     d3.selectAll(".enemy")
     .transition()
-    .tween(".enemy", collision)
+    .delay(200)
     .duration(function(d){return d.tt})
+    .tween(".enemy", collision)
     .attr("x", function(d){
         return d.x;
     })
     .attr("y", function (d){
         return d.y;
     })
+    // d3.selectAll(".enemy")
+    // .transition()
+    // .tween(".enemy", rotate);
+
+
 };
 
 function collision(d, i){
@@ -98,6 +121,10 @@ function collision(d, i){
         //select player toget x and y
         var px = player[0]['x'];
         var py = player[0]['y'];
+        var x = d3.select(this).attr('x')+10;
+        var y = d3.select(this).attr('y')+10;
+        if (enemies[i]) { enemies[i].r = enemies[i].r + 30; }
+        d3.select(this).attr("transform", "rotate(" + d.r + " " + x + " " + y + ")")
         xdiff = d3.select(this).attr('x')-px;
         ydiff = d3.select(this).attr('y')-py;
         dist = Math.sqrt(Math.pow(xdiff, 2) + Math.pow(ydiff, 2));
@@ -110,6 +137,7 @@ function collision(d, i){
             if (!colliding){
                 collisionCtr++;
                 d3.select(".collisions").select('span').text(collisionCtr);
+
                 colliding = true;
             }
             d3.select(".high").select('span').text(highScore);
@@ -125,13 +153,30 @@ function collision(d, i){
 
 };
 
+function updateSlider(hi){
+    badguys = hi;
+    d3.select("svg").selectAll(".enemy")
+    .data(enemies)
+    .remove()
+    enemies = _.range(0, badguys).map(function(i){
+    return {
+        id : i,
+        x : Math.random()*boardWidth,
+        y : Math.random()*boardHeight,
+        tt: Math.random()*1000+400,
+        r: 0
+    }
+});
+}
+
 function dragmove(d){
     d3.select(this)
-        .attr("cx", d.x = d3.event.x)
-        .attr("cy", d.y = d3.event.y);
+        .attr("cx", d.x = Math.min(boardWidth, Math.max(d3.event.x, 0)))
+        .attr("cy", d.y = Math.min(boardHeight, Math.max(d3.event.y, 0)));
 };
 move();
-setInterval(move, 1200);
+setInterval(move, 1500);
+
 setInterval(function(){
     score++;
     d3.select(".current").select('span').text(score);
