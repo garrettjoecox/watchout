@@ -59,16 +59,18 @@ d3.select("svg").selectAll(".player")
 d3.select("svg").selectAll(".enemy")
     .data(enemies)
     .enter()
-    .append("circle")
+    .append("image")
+    .attr("xlink:href","shuriken.png")
+    .attr("height","20px")
+    .attr("width","20px")
+    .style("z-index","100")
     .attr("class", "enemy")
-    .attr("cx", function(d){
+    .attr("x", function(d){
         return d.x;
     })
-    .attr("cy", function (d){
+    .attr("y", function (d){
         return d.y;
     })
-    .attr("r", "10")
-    .attr("fill" , "red");
 
 var move = function (){
 
@@ -82,10 +84,10 @@ var move = function (){
     .transition()
     .tween(".enemy", collision)
     .duration(function(d){return d.tt})
-    .attr("cx", function(d){
+    .attr("x", function(d){
         return d.x;
     })
-    .attr("cy", function (d){
+    .attr("y", function (d){
         return d.y;
     })
 };
@@ -96,11 +98,10 @@ function collision(d, i){
         //select player toget x and y
         var px = player[0]['x'];
         var py = player[0]['y'];
-        xdiff = d3.select(this).attr('cx')-px;
-        ydiff = d3.select(this).attr('cy')-py;
+        xdiff = d3.select(this).attr('x')-px;
+        ydiff = d3.select(this).attr('y')-py;
         dist = Math.sqrt(Math.pow(xdiff, 2) + Math.pow(ydiff, 2));
         //loop over the enemies , compare enemy x and y to player
-        // console.log(dist);
         if (dist < 20 && dist !== 0){
 
             if (highScore < score){
@@ -110,7 +111,6 @@ function collision(d, i){
                 collisionCtr++;
                 d3.select(".collisions").select('span').text(collisionCtr);
                 colliding = true;
-                console.log("hit");
             }
             d3.select(".high").select('span').text(highScore);
             d3.select(".current").select('span').text(score);
