@@ -3,8 +3,33 @@
 /* Note: an asteroid image is included in this repo.
 Feel free to use it if you like. */
 .scoreboard {
+  font-family: 'Roboto', sans-serif, arial;
+  font-weight: 700;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+}
+.high, .current, .collisions{
+  background-color:#C8DBE0;
+  width:200px;
   text-align: center;
+
 }
 svg {
   border: solid black 2px;
+}
+
+body {
+  position: relative;
+}
+.scoreboard {
+  position: absolute;
+}
+
+.enemy{
+  background-image: url('shuriken.png');
+  position: absolute;
+  z-index: 1000;
+  background-color: black;
+  color: black;
 }
